@@ -48,11 +48,12 @@ if file_unggahan is not None:
     # FASE PREVIEW & PEMBERSIHAN (Sama untuk keduanya)
     # ==========================================
     st.subheader(f"1. Preview Mentah - {sheet_pilihan}")
-    st.dataframe(df_mentah.head(15))
+    st.dataframe(df_mentah)
     
     st.subheader("2. Hasil Pembersihan Dasar")
     df_bersih = df_mentah.dropna(how='all').dropna(axis=1, how='all')
-    st.dataframe(df_bersih.head(15))
+    st.dataframe(df_bersih)
 
 else:
     st.info("👈 Silakan unggah file Excel atau CSV di menu sebelah kiri.")
+
