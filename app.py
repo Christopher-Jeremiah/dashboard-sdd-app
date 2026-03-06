@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import io  # <--- Tambahkan baris ini (Ini adalah 'flashdisk virtual' kita)
 
 # Mengatur tampilan layar web
 st.set_page_config(page_title="Playtest Dashboard SDD", layout="wide")
@@ -43,11 +44,30 @@ if file_unggahan is not None:
     # (Sering terjadi di Excel jika ada sisa format warna/garis tanpa teks)
     df_bersih = df_mentah.dropna(how='all').dropna(axis=1, how='all')
     
+   # ... (kode sebelumnya)
     st.write("Data setelah baris dan kolom yang benar-benar kosong dibersihkan oleh sistem:")
     st.dataframe(df_bersih.head(15))
     
-    # Catatan untuk versi final nanti
-    st.info("💡 Bayangkan untuk hasil akhirnya nanti: Anda tidak perlu menggeser slider manual. Sistem Python bisa disetel agar otomatis mendeteksi posisi tabel di puluhan sheet tersebut, menggabungkannya menjadi satu, lalu membuat grafik penjualannya!")
+    # ==========================================
+    # FASE UNDUH EXCEL (XLSX)
+    # ==========================================
+    st.subheader("📥 Unduh Hasil Pembersihan")
+    
+    # 1. Menyiapkan 'flashdisk virtual' di memori
+    buffer = io.BytesIO()
+    
+    # 2. Menyuruh Pandas menyimpan data bersih ke dalam flashdisk virtual tersebut
+    # index=False agar nomor urut 0, 1, 2 bawaan Python tidak ikut tersimpan
+    df_bersih.to_excel(buffer, index=False, engine='openpyxl')
+    
+    # 3. Membuat tombol unduh resmi dari Streamlit
+    st.download_button(
+        label="Download Data Bersih (.xlsx)",
+        data=buffer.getvalue(), # Mengambil isi dari flashdisk virtual
+        file_name=f"Data_Bersih_{sheet_pilihan}.xlsx", # Nama file otomatis sesuai nama sheet
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" # Kode standar web untuk file Excel
+    )
+     
 
 else:
-    st.info("👈 Silakan unggah file DBoards - 2025.xlsx Anda di menu sebelah kiri untuk memulai playtest.")
+    st.info("👈 Silakan unggah file Anda di menu sebelah kiri untuk memulai playtest.")
